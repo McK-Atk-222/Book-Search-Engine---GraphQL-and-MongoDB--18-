@@ -7,16 +7,34 @@ import { loginUser } from '../utils/API';
 import Auth from '../utils/auth';
 import type { User } from '../models/User';
 
-// biome-ignore lint/correctness/noEmptyPattern: <explanation>
-const LoginForm = ({}: { handleModalClose: () => void }) => {
-  const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
-  const [validated] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
+import { useMutation } from '@apollo/client';
+import { LOGIN_USER } from '../utils/mutations';
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setUserFormData({ ...userFormData, [name]: value });
+const Login = () => {
+  const [formState, setFormState] = useState({ email: '', password: '' });
+  const [login, { error, data }] = useMutation(LOGIN_USER);
+
+  // update state based on form input changes
+  const handleChange = (event: ChangeEvent) => {
+    const { name, value } = event.target as HTMLInputElement;
+
+    setFormState({
+      ...formState,
+      [name]: value,
+    });
   };
+
+
+// biome-ignore lint/correctness/noEmptyPattern: <explanation>
+// const LoginForm = ({}: { handleModalClose: () => void }) => {
+//   const [userFormData, setUserFormData] = useState<User>({ username: '', email: '', password: '', savedBooks: [] });
+//   const [validated] = useState(false);
+//   const [showAlert, setShowAlert] = useState(false);
+
+//   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+//     const { name, value } = event.target;
+//     setUserFormData({ ...userFormData, [name]: value });
+//   };
 
   const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -29,7 +47,7 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
     }
 
     try {
-      const response = await loginUser(userFormData);
+      const response = await login(userFormData);
 
       if (!response.ok) {
         throw new Error('something went wrong!');
@@ -42,7 +60,7 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
       setShowAlert(true);
     }
 
-    setUserFormData({
+    setFormState({
       username: '',
       email: '',
       password: '',
@@ -53,17 +71,17 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
   return (
     <>
       <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
-        <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
+        {/* <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
           Something went wrong with your login credentials!
-        </Alert>
+       </Alert> */}
         <Form.Group className='mb-3'>
           <Form.Label htmlFor='email'>Email</Form.Label>
           <Form.Control
             type='text'
             placeholder='Your email'
             name='email'
-            onChange={handleInputChange}
-            value={userFormData.email || ''}
+            onChange={handleChange}
+            value={formState.email || ''}
             required
           />
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
@@ -75,14 +93,14 @@ const LoginForm = ({}: { handleModalClose: () => void }) => {
             type='password'
             placeholder='Your password'
             name='password'
-            onChange={handleInputChange}
-            value={userFormData.password || ''}
+            onChange={handleChange}
+            value={formState.password || ''}
             required
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
         <Button
-          disabled={!(userFormData.email && userFormData.password)}
+          // disabled={!(userFormData.email && userFormData.password)}
           type='submit'
           variant='success'>
           Submit
