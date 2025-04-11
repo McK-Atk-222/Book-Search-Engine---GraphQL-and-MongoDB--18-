@@ -63,7 +63,7 @@ login: async (_parent: any, { email, password }: { email: string; password: stri
     const token = signToken(user.username, user.email, user._id);
     return { token, user };
 },
-createUser: async (_parent: any, { input }: AddProfileArgs): Promise<{ token: string; user: any }> => {
+addUser: async (_parent: any, { input }: AddProfileArgs): Promise<{ token: string; user: any }> => {
     const user = await User.create({ ...input });
     const token = signToken(user.username, user.email, user._id);
     return { token, user };
