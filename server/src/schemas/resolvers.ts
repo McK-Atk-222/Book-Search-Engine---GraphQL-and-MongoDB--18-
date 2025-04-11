@@ -51,7 +51,7 @@ me: async (_parent: any, _args: any, context: Context): Promise<User| null> => {
       },
     },
 Mutation: {
-login: async (_parent: any, { email, password }: { email: string; password: string }): Promise<{ token: string; user: User }> => {
+login: async (_parent: any, { email, password }: { email: string; password: string }): Promise<{ token: string; user: any }> => {
     const user = await User.findOne({ email });
     if (!user) {
       throw AuthenticationError;
@@ -63,7 +63,7 @@ login: async (_parent: any, { email, password }: { email: string; password: stri
     const token = signToken(user.username, user.email, user._id);
     return { token, user };
 },
-createUser: async (_parent: any, { input }: AddProfileArgs): Promise<{ token: string; user: User }> => {
+createUser: async (_parent: any, { input }: AddProfileArgs): Promise<{ token: string; user: any }> => {
     const user = await User.create({ ...input });
     const token = signToken(user.username, user.email, user._id);
     return { token, user };
