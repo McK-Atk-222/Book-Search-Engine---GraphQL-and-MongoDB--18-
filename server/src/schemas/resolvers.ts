@@ -78,7 +78,7 @@ saveBook: async (_parent: any, { _id, book }: AddBookArgs, context: Context): Pr
     }
     throw AuthenticationError;
 },
-deleteBook: async (_parent: any, { bookId }: RemoveBookArgs, context: Context): Promise<User | null> => {
+removeBook: async (_parent: any, { bookId }: RemoveBookArgs, context: Context): Promise<User | null> => {
     if (context.user) {
       return await User.findOneAndUpdate(
         { _id: context.user._id },
