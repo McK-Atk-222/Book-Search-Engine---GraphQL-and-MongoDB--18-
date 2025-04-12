@@ -20,16 +20,18 @@ interface User {
 }
 
 interface AddProfileArgs {
-    input:{
-      name: string;
+      username: string;
       email: string;
-      password: string;
-    }
+      password: string; 
   }
 
 interface AddBookArgs {
-    _id: string;
-    book: Book;
+  bookId: string;
+  title: string;
+  authors: string[];
+  description: string;
+  image: string;
+  link: string;
   }
   
 interface RemoveBookArgs {
@@ -63,16 +65,18 @@ login: async (_parent: any, { email, password }: { email: string; password: stri
     const token = signToken(user.username, user.email, user._id);
     return { token, user };
 },
-addUser: async (_parent: any, { input }: AddProfileArgs): Promise<{ token: string; user: any }> => {
-    const user = await User.create({ ...input });
+addUser: async (_parent: any, { username, email, password }: AddProfileArgs): Promise<{ token: string; user: any }> => {
+    const user = await User.create({ email, username, password });
     const token = signToken(user.username, user.email, user._id);
     return { token, user };
 },
-saveBook: async (_parent: any, { _id, book }: AddBookArgs, context: Context): Promise<User | null> => {
+saveBook: async (_parent: any, { bookId, title, authors, description, image, link }: AddBookArgs, context: Context): Promise<User | null> => {
     if (context.user) {
       return await User.findOneAndUpdate(
-        { _id: _id },
-        {$addToSet: { savedBooks: book }},
+        { _id: context.user._id },
+        {$addToSet: { savedBooks: {
+          bookId, title, authors, description, image, link
+        } }},
         {new: true, runValidators: true,}
       );
     }
@@ -82,7 +86,7 @@ removeBook: async (_parent: any, { bookId }: RemoveBookArgs, context: Context): 
     if (context.user) {
       return await User.findOneAndUpdate(
         { _id: context.user._id },
-        { $pull: { savedBooks: bookId } },
+        { $pull: { savedBooks: {bookId} } },
         { new: true }
       );
     }
