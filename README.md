@@ -15,7 +15,7 @@ A fully functioning Google Books API search engine built with a RESTful API that
 npm i
 
 ## Usage
-npm start
+npm start DEPLOYED APP: https://book-search-engine-graphql-and-mongodb-18.onrender.com
 
 ## License
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
